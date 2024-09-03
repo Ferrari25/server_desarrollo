@@ -1,4 +1,4 @@
-descargar pgadmin linux-mint
+### descargar pgadmin linux-mint
 
 sudo apt-get update
 
@@ -14,7 +14,7 @@ create database db_prueba with owner prueba;
 
 alter user prueba with superuser;
 
-Intalación de pgadmin
+### Intalación de pgadmin
 
 sudo curl https://www.pgadmin.org/static/packages_pgadmin_org.pub | sudo apt-key add
 
