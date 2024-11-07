@@ -1,0 +1,25 @@
+# Definir las etapas del pipeline
+# stages: Aquí se definen las etapas del pipeline. 
+# En este caso, solo tenemos una etapa, `build`, que se corresponde con el trabajo de construcción de la imagen Docker.
+stages:
+  - build
+
+# Trabajo para la etapa de construcción (build)
+build:
+  stage: build
+  # image: Define la imagen base que usará GitLab CI para ejecutar el job. 
+  # Aquí se usa `docker:latest` para ejecutar comandos Docker.
+  image: docker:latest  # Usa Docker dentro del CI/CD
+  # services: GitLab requiere `docker:dind` (Docker-in-Docker) para construir imágenes Docker dentro de su pipeline.
+  services:
+    - docker:dind       # Habilita Docker-in-Docker para poder construir imágenes
+  # el script son los comandos que se ejecutan en el job
+  script:
+    # Este comando inicia sesión en el registro de GitLab usando las variables de entorno `CI_REGISTRY_USER`, `CI_REGISTRY_PASSWORD` y `CI_REGISTRY` (que GitLab CI configura automáticamente cuando se tiene un registro de contenedores habilitado).
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+    # Construye la imagen Docker a partir del Dockerfile en el directorio actual (`.`), asignándole la etiqueta `latest` y almacenándola en el registro de GitLab (`$CI_REGISTRY_IMAGE`).
+    - docker build -t $CI_REGISTRY_IMAGE:latest .
+    # Sube la imagen construida al registro de GitLab, disponible para otras etapas o para que otros proyectos la usen.
+    - docker push $CI_REGISTRY_IMAGE:latest
+  only:
+    - main
